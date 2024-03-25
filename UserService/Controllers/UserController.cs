@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Mail;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 using UserService.AuthorizationModel;
 using UserService.Db;
 using UserService.Repo;
@@ -101,14 +103,27 @@ namespace UserService.Controllers
         {
             try
             {
+                if (!CheckEmailFormat(userLogin.Email))
+                {
+                    return BadRequest("Указан некорректный адрес электронной почты");
+                }
+                else if (!CheckPasswordFormat(userLogin.Password))
+                {
+                    return BadRequest("Пароль должен соответствовать следующим критериям: " +
+                    "- хотя бы 1 заглавная латинская буква," +
+                    "- хотя бы 1 строчная латинская буква," +
+                    "- хотя бы 1 цифра," +
+                    "- без пробелов," +
+                    "- иметь длину не менее 5 символов");
+                }
+
                 _userRepository.UserAdd(userLogin.Email, userLogin.Password, Db.RoleId.Admin);
+                return Ok();
             }
             catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
             }
-
-            return Ok();
         }
 
 
@@ -119,13 +134,27 @@ namespace UserService.Controllers
         {
             try
             {
+                if(!CheckEmailFormat(userLogin.Email))
+                {
+                    return BadRequest("Указан некорректный адрес электронной почты");
+                }
+                else if(!CheckPasswordFormat(userLogin.Password))
+                {
+                    return BadRequest("Пароль должен соответствовать следующим критериям: " +
+                    "- хотя бы 1 заглавная латинская буква," +
+                    "- хотя бы 1 строчная латинская буква," +
+                    "- хотя бы 1 цифра," +
+                    "- без пробелов," +
+                    "- иметь длину не менее 5 символов");
+                }
+
                 _userRepository.UserAdd(userLogin.Email, userLogin.Password, Db.RoleId.User);
+                return Ok();
             }
             catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
             }
-            return Ok();
         }
 
 
@@ -172,6 +201,18 @@ namespace UserService.Controllers
                 signingCredentials: credentials);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+
+        public static bool CheckPasswordFormat(string password)
+        {
+            return Regex.IsMatch(password, @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{5,}$");
+        }
+
+
+        public static bool CheckEmailFormat(string email)
+        {
+            return Regex.IsMatch(email, @"^[a-zA-Z\d]+@\S+\.\S+$");
         }
     }
 }
