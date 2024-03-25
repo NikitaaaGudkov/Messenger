@@ -24,12 +24,12 @@ namespace UserService.Controllers
 
     [ApiController]
     [Route("[controller]")]
-    public class LoginController : ControllerBase
+    public class UserController : ControllerBase
     {
         private readonly IConfiguration _config;
         private readonly IUserRepository _userRepository;
 
-        public LoginController(IConfiguration config, IUserRepository userRepository)
+        public UserController(IConfiguration config, IUserRepository userRepository)
         {
             _config = config;
             _userRepository = userRepository;
@@ -131,6 +131,7 @@ namespace UserService.Controllers
 
         [AllowAnonymous]
         [HttpPost]
+        [Route("Login")]
         public ActionResult Login([FromBody] LoginModel userLogin)
         {
             try

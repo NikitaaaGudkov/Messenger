@@ -10,5 +10,6 @@ namespace UserService.Repo
         public IEnumerable<UserModel> GetUsers();
         public Guid DeleteUser(string email);
         public Guid GetUserId(string email);
+        public bool CheckUserById(Guid userId);
     }
 }

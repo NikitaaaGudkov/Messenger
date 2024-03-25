@@ -17,6 +17,18 @@ namespace UserService.Repo
             _context = context;
         }
 
+        public bool CheckUserById(Guid userId)
+        {
+            using (_context)
+            {
+                var user = _context.Users.FirstOrDefault(u => u.Id == userId);
+                if (user == null)
+                {
+                    return false;
+                }
+                return true;
+            }
+        }
 
         public Guid DeleteUser(string email)
         {

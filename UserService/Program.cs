@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Security.Cryptography;
+using UserService.Client;
 using UserService.Db;
 using UserService.Repo;
 
@@ -67,6 +68,7 @@ var cfg = config.Build();
 builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
 {
     containerBuilder.RegisterType<UserRepository>().As<IUserRepository>();
+    containerBuilder.RegisterType<MessageClient>().As<IMessageClient>();
     containerBuilder.Register(c => new UserContext(cfg.GetConnectionString("db"))).InstancePerDependency();
 });
 
