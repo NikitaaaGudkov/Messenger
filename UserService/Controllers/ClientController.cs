@@ -7,11 +7,13 @@ using UserService.Repo;
 
 namespace UserService.Controllers
 {
-    public class MessageController : ControllerBase
+    [ApiController]
+    [Route("[controller]")]
+    public class ClientController : ControllerBase
     {
         private readonly IMessageClient _messageClient;
         private readonly IUserRepository _userRepository;
-        public MessageController(IMessageClient messageClient, IUserRepository userRepository)
+        public ClientController(IMessageClient messageClient, IUserRepository userRepository)
         {
             _messageClient = messageClient;
             _userRepository = userRepository;

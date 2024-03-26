@@ -1,0 +1,71 @@
+{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/User/{method}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5271
+        }
+      ],
+      "UpstreamPathTemplate": "/User/{method}",
+      "UpstreamHttpMethod": [ "Get", "Post", "Delete" ],
+      "SwaggerKey": "users"
+    },
+    {
+      "DownstreamPathTemplate": "/Client/{method}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5271
+        }
+      ],
+      "UpstreamPathTemplate": "/Client/{method}",
+      "UpstreamHttpMethod": [ "Get", "Post" ],
+      "SwaggerKey": "users"
+    },
+    {
+      "DownstreamPathTemplate": "/Message/{method}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 7187
+        }
+      ],
+      "UpstreamPathTemplate": "/Message/{method}",
+      "UpstreamHttpMethod": [ "Get", "Post" ],
+      "SwaggerKey": "messages"
+    }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "http://localhost:5555"
+  },
+
+  "SwaggerEndPoints": [
+    {
+      "Key": "users",
+      "TransformByOcelotConfig": false,
+      "Config": [
+        {
+          "Name": "UserService API",
+          "Version": "v1",
+          "Url": "http://localhost:5271/swagger/v1/swagger.json"
+        }
+      ]
+    },
+    {
+      "Key": "messages",
+      "TransformByOcelotConfig": false,
+      "Config": [
+        {
+          "Name": "MessageService API",
+          "Version": "v1",
+          "Url": "https://localhost:7187/swagger/v1/swagger.json"
+        }
+      ]
+    }
+  ]
+}
