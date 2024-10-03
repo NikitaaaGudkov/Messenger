@@ -1,6 +1,6 @@
-﻿using MessageLibrary;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
+using UserService.DTO;
 
 namespace UserService.Client
 {

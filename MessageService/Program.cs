@@ -22,7 +22,7 @@ var cfg = config.Build();
 builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
 {
     containerBuilder.RegisterType<MessageRepository>().As<IMessageRepository>();
-    containerBuilder.Register(c => new MessageContext(cfg.GetConnectionString("db"))).InstancePerDependency();
+    containerBuilder.Register(c => new MessageContext(cfg.GetConnectionString("db")!)).InstancePerDependency();
 });
 
 

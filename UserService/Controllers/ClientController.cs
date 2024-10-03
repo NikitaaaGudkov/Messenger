@@ -1,8 +1,8 @@
-﻿using MessageLibrary;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using UserService.Client;
+using UserService.DTO;
 using UserService.Repo;
 
 namespace UserService.Controllers

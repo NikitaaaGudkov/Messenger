@@ -1,0 +1,36 @@
+﻿version: '3.8'
+services:
+
+  db:
+    image: postgres
+    restart: always
+    container_name: messages_db
+    environment:
+      POSTGRES_USER: nikita
+      POSTGRES_PASSWORD: example
+    ports:
+      # Порт 5432 изменён на 5433 для запуска всех сервисов на одном хосте
+      - 5433:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - db-network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: messages_service_image
+    container_name: messages_service
+    ports:
+      - 5001:80
+    depends_on:
+      - db
+    networks:
+      - db-network
+
+volumes:
+  postgres_data:
+networks:
+  db-network:
+    driver: bridge

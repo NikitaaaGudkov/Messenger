@@ -1,0 +1,24 @@
+﻿version: '3.8'
+services:
+
+  dbeaver:
+    container_name: dbeaver
+    image: dbeaver/cloudbeaver
+    ports:
+      - 8082:8978
+    networks:
+      - db-network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: api_gateway_image
+    container_name: api_gateway_service
+    ports:
+      - 5002:80
+volumes:
+  pgadmin-data:
+networks:
+  db-network:
+    driver: bridge

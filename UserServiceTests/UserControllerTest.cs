@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using System.Security.Claims;
@@ -28,9 +29,10 @@ namespace UserServiceTests
 
             var configMock = new Mock<IConfiguration>();
             var userRepositoryMock = new Mock<IUserRepository>();
+            var cacheMock = new Mock<IDistributedCache>();
             userRepositoryMock.Setup(x => x.DeleteUser(deletingUserEmail)).Returns(deletingUserId);
 
-            UserController userController = new UserController(configMock.Object, userRepositoryMock.Object);
+            UserController userController = new UserController(configMock.Object, userRepositoryMock.Object, cacheMock.Object);
             userController.ControllerContext = new ControllerContext();
             userController.ControllerContext.HttpContext = context;
 
@@ -60,8 +62,9 @@ namespace UserServiceTests
 
             var configMock = new Mock<IConfiguration>();
             var userRepositoryMock = new Mock<IUserRepository>();
+            var cacheMock = new Mock<IDistributedCache>();
 
-            UserController userController = new UserController(configMock.Object, userRepositoryMock.Object);
+            UserController userController = new UserController(configMock.Object, userRepositoryMock.Object, cacheMock.Object);
             userController.ControllerContext = new ControllerContext();
             userController.ControllerContext.HttpContext = context;
 

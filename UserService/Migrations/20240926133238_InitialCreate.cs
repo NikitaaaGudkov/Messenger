@@ -14,7 +14,7 @@ namespace UserService.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Roles",
+                name: "roles",
                 columns: table => new
                 {
                     RoleId = table.Column<int>(type: "integer", nullable: false),
@@ -22,7 +22,7 @@ namespace UserService.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Roles", x => x.RoleId);
+                    table.PrimaryKey("PK_roles", x => x.RoleId);
                 });
 
             migrationBuilder.CreateTable(
@@ -39,15 +39,15 @@ namespace UserService.Migrations
                 {
                     table.PrimaryKey("users_pkey", x => x.id);
                     table.ForeignKey(
-                        name: "FK_users_Roles_RoleId",
+                        name: "FK_users_roles_RoleId",
                         column: x => x.RoleId,
-                        principalTable: "Roles",
+                        principalTable: "roles",
                         principalColumn: "RoleId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
-                table: "Roles",
+                table: "roles",
                 columns: new[] { "RoleId", "Name" },
                 values: new object[,]
                 {
@@ -74,7 +74,7 @@ namespace UserService.Migrations
                 name: "users");
 
             migrationBuilder.DropTable(
-                name: "Roles");
+                name: "roles");
         }
     }
 }

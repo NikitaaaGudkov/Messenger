@@ -54,7 +54,6 @@ namespace UserService.Repo
             }
         }
 
-
         public IEnumerable<UserModel> GetUsers()
         {
             using (_context)
@@ -84,11 +83,12 @@ namespace UserService.Repo
                     throw new Exception($"Пользователь с почтой \"{email}\" уже есть в базе");
                 }
 
-                var user = new User();
-                user.Email = email;
-                user.RoleId = roleId;
-
-                user.Salt = new byte[16];
+                var user = new User
+                {
+                    Email = email,
+                    RoleId = roleId,
+                    Salt = new byte[16]
+                };
                 new Random().NextBytes(user.Salt);
 
                 var data = Encoding.ASCII.GetBytes(password).Concat(user.Salt).ToArray();
@@ -102,7 +102,6 @@ namespace UserService.Repo
                 _context.SaveChanges();
             }
         }
-
 
         public IdAndRoleForLogin UserCheck(string email, string password)
         {

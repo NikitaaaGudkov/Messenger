@@ -1,6 +1,8 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Security.Cryptography;
@@ -25,7 +27,6 @@ builder.Services.AddSwaggerGen(opt =>
         Name = "Authorization",
         Type = SecuritySchemeType.Http,
         BearerFormat = "Token",
-
         Scheme = "bearer"
     });
     opt.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -69,7 +70,12 @@ builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder =>
 {
     containerBuilder.RegisterType<UserRepository>().As<IUserRepository>();
     containerBuilder.RegisterType<MessageClient>().As<IMessageClient>();
-    containerBuilder.Register(c => new UserContext(cfg.GetConnectionString("db"))).InstancePerDependency();
+    containerBuilder.Register(c => new UserContext(cfg.GetConnectionString("db")!)).InstancePerDependency();
+});
+
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = cfg.GetConnectionString("redis");
 });
 
 
@@ -86,7 +92,6 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

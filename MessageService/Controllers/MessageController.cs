@@ -1,4 +1,4 @@
-﻿using MessageLibrary;
+﻿using MessageService.DTO;
 using MessageService.Repo;
 using Microsoft.AspNetCore.Mvc;
 

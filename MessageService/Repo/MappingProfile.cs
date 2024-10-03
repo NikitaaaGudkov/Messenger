@@ -1,9 +1,12 @@
 ﻿using AutoMapper;
-using MessageLibrary;
 using MessageService.Db;
+using MessageService.DTO;
 
 namespace MessageService.Repo
 {
+    /// <summary>
+    /// Класс, преобразующий сущность из базы данных в сущность бизнес-логики и наоборот
+    /// </summary>
     public class MappingProfile : Profile
     {
         public MappingProfile()

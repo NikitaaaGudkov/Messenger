@@ -1,8 +1,18 @@
 ﻿namespace UserService.AuthorizationModel
 {
+    /// <summary>
+    /// Модель пользователя, используемая в бизнес-логике
+    /// </summary>
     public class UserModel
     {
-        public string Email { get; set; }
-        public UserRole Role { get; set; }
+        /// <summary>
+        /// Электронная почта
+        /// </summary>
+        public string Email { get; set; } = null!;
+
+        /// <summary>
+        /// Роль пользователя
+        /// </summary>
+        public UserRoleModel Role { get; set; }
     }
 }

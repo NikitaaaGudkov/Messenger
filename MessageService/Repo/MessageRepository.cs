@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
-using MessageLibrary;
+
 using MessageService.Db;
+using MessageService.DTO;
 
 namespace MessageService.Repo
 {

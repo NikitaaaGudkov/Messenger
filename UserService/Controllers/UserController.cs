@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net.Mail;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using UserService.AuthorizationModel;
 using UserService.Db;
@@ -12,7 +13,7 @@ using UserService.Repo;
 
 namespace UserService.Controllers
 {
-    public static class RsaTools
+    public static class RSATools
     {
         public static RSA GetPrivateKey()
         {
@@ -30,19 +31,21 @@ namespace UserService.Controllers
     {
         private readonly IConfiguration _config;
         private readonly IUserRepository _userRepository;
+        private readonly IDistributedCache _cache;
 
-        public UserController(IConfiguration config, IUserRepository userRepository)
+        public UserController(IConfiguration config, IUserRepository userRepository, IDistributedCache cache)
         {
             _config = config;
             _userRepository = userRepository;
+            _cache = cache;
         }
 
 
-        private static UserRole RoleIdToUserRole(RoleId id)
+        private static UserRoleModel RoleIdToUserRole(RoleId id)
         {
-            if (id == RoleId.Admin) return UserRole.Administrator;
+            if (id == RoleId.Admin) return UserRoleModel.Administrator;
             else
-                return UserRole.User;
+                return UserRoleModel.User;
         }
 
 
@@ -51,8 +54,15 @@ namespace UserService.Controllers
         [Authorize(Roles = "Administrator, User")]
         public IActionResult GetUsers()
         {
-            var users = _userRepository.GetUsers();
-            return Ok(users);
+            if(TryGetValue("users", out IEnumerable<UserModel> users))
+            {
+                return Ok(users);
+            }
+            else
+            {
+                users = _userRepository.GetUsers();
+                return Ok(users);
+            }
         }
 
 
@@ -149,6 +159,7 @@ namespace UserService.Controllers
                 }
 
                 _userRepository.UserAdd(userLogin.Email, userLogin.Password, Db.RoleId.User);
+                _cache.Remove("authors");
                 return Ok();
             }
             catch (Exception ex)
@@ -184,7 +195,7 @@ namespace UserService.Controllers
         {
             var userId = idAndRole.Id;
 
-            var key = new RsaSecurityKey(RsaTools.GetPrivateKey());
+            var key = new RsaSecurityKey(RSATools.GetPrivateKey());
 
             var credentials = new SigningCredentials(key, SecurityAlgorithms.RsaSha256Signature);
 
@@ -213,6 +224,37 @@ namespace UserService.Controllers
         public static bool CheckEmailFormat(string email)
         {
             return Regex.IsMatch(email, @"^[a-zA-Z\d]+@\S+\.\S+$");
+        }
+
+        public T GetData<T>(string key)
+        {
+            var value = _cache.GetString(key);
+            if(!string.IsNullOrEmpty(value))
+            {
+                return JsonSerializer.Deserialize<T>(value);
+            }
+            return default;
+        }
+
+        public void SetData<T>(string key, T value)
+        {
+            string jsonString = JsonSerializer.Serialize(value);
+            _cache.SetString(key, jsonString);
+        }
+
+        public bool TryGetValue<T>(string key, out T value)
+        {
+            var data = GetData<T>(key);
+            if(data == null)
+            {
+                value = default;
+                return false;
+            }
+            else
+            {
+                value = data;
+                return true;
+            }
         }
     }
 }
