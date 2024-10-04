@@ -1,20 +1,15 @@
 ﻿using MessageService.DTO;
 using MessageService.Repo;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MessageService.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class MessageController : ControllerBase
+    public class MessageController(IMessageRepository messageRepository) : ControllerBase
     {
-        private readonly IMessageRepository _messageRepository;
-
-        public MessageController(IMessageRepository messageRepository)
-        {
-            _messageRepository = messageRepository;
-        }
-
+        private readonly IMessageRepository _messageRepository = messageRepository;
 
         [HttpPost]
         [Route("SendMessage")]

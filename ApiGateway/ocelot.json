@@ -28,11 +28,11 @@
     },
     {
       "DownstreamPathTemplate": "/Message/{method}",
-      "DownstreamScheme": "https",
+      "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 7187
+          "Port": 5043
         }
       ],
       "UpstreamPathTemplate": "/Message/{method}",
@@ -63,7 +63,7 @@
         {
           "Name": "MessageService API",
           "Version": "v1",
-          "Url": "https://localhost:7187/swagger/v1/swagger.json"
+          "Url": "http://localhost:5043/swagger/v1/swagger.json"
         }
       ]
     }

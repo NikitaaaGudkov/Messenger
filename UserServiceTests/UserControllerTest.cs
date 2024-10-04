@@ -32,8 +32,10 @@ namespace UserServiceTests
             var cacheMock = new Mock<IDistributedCache>();
             userRepositoryMock.Setup(x => x.DeleteUser(deletingUserEmail)).Returns(deletingUserId);
 
-            UserController userController = new UserController(configMock.Object, userRepositoryMock.Object, cacheMock.Object);
-            userController.ControllerContext = new ControllerContext();
+            UserController userController = new(configMock.Object, userRepositoryMock.Object, cacheMock.Object)
+            {
+                ControllerContext = new ControllerContext()
+            };
             userController.ControllerContext.HttpContext = context;
 
             var expected = deletingUserId;
@@ -64,8 +66,10 @@ namespace UserServiceTests
             var userRepositoryMock = new Mock<IUserRepository>();
             var cacheMock = new Mock<IDistributedCache>();
 
-            UserController userController = new UserController(configMock.Object, userRepositoryMock.Object, cacheMock.Object);
-            userController.ControllerContext = new ControllerContext();
+            UserController userController = new(configMock.Object, userRepositoryMock.Object, cacheMock.Object)
+            {
+                ControllerContext = new ControllerContext()
+            };
             userController.ControllerContext.HttpContext = context;
 
             var expected = "Администратор не может удалить сам себя";

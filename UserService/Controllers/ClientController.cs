@@ -9,29 +9,26 @@ namespace UserService.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ClientController : ControllerBase
+    public class ClientController(IMessageClient messageClient, IUserRepository userRepository, IConfiguration config) : ControllerBase
     {
-        private readonly IMessageClient _messageClient;
-        private readonly IUserRepository _userRepository;
-        public ClientController(IMessageClient messageClient, IUserRepository userRepository)
-        {
-            _messageClient = messageClient;
-            _userRepository = userRepository;
-        }
-
+        private readonly IMessageClient _messageClient = messageClient;
+        private readonly IUserRepository _userRepository = userRepository;
+        private readonly IConfiguration _config = config;
 
         [HttpGet]
         [Route("GetMessages")]
         [Authorize(Roles = "Administrator, User")]
         public async Task<IActionResult> GetMessages()
         {
+            string messageServiceAddress = _config.GetConnectionString("message_service_address")!;
+
             var claimsIdentity = HttpContext.User.Identity as ClaimsIdentity;
 
-            var idClaim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+            var idClaim = claimsIdentity!.FindFirst(ClaimTypes.NameIdentifier);
 
-            var clientId = Guid.Parse(idClaim.Value);
+            var clientId = Guid.Parse(idClaim!.Value);
 
-            var getMessagesTask = _messageClient.ReceiveMessages(clientId);
+            var getMessagesTask = _messageClient.ReceiveMessages(messageServiceAddress, clientId);
 
             var messages = await getMessagesTask;
 
@@ -44,15 +41,16 @@ namespace UserService.Controllers
         [Authorize(Roles = "Administrator, User")]
         public async Task<IActionResult> AddMessages(Guid consumerId, string text)
         {
+            string messageServiceAddress = _config.GetConnectionString("message_service_address")!;
             try
             {
                 if (_userRepository.CheckUserById(consumerId))
                 {
                     var claimsIdentity = HttpContext.User.Identity as ClaimsIdentity;
 
-                    var idClaim = claimsIdentity.FindFirst(ClaimTypes.NameIdentifier);
+                    var idClaim = claimsIdentity!.FindFirst(ClaimTypes.NameIdentifier);
 
-                    var senderId = Guid.Parse(idClaim.Value);
+                    var senderId = Guid.Parse(idClaim!.Value);
 
                     var messageDto = new MessageDto()
                     {
@@ -62,7 +60,7 @@ namespace UserService.Controllers
                         DateTime = DateTime.Now
                     };
 
-                    var sendMessagesTask = _messageClient.SendMessage(messageDto);
+                    var sendMessagesTask = _messageClient.SendMessage(messageServiceAddress, messageDto);
 
                     await sendMessagesTask;
 

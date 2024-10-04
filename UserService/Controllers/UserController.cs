@@ -27,19 +27,11 @@ namespace UserService.Controllers
 
     [ApiController]
     [Route("[controller]")]
-    public class UserController : ControllerBase
+    public class UserController(IConfiguration config, IUserRepository userRepository, IDistributedCache cache) : ControllerBase
     {
-        private readonly IConfiguration _config;
-        private readonly IUserRepository _userRepository;
-        private readonly IDistributedCache _cache;
-
-        public UserController(IConfiguration config, IUserRepository userRepository, IDistributedCache cache)
-        {
-            _config = config;
-            _userRepository = userRepository;
-            _cache = cache;
-        }
-
+        private readonly IConfiguration _config = config;
+        private readonly IUserRepository _userRepository = userRepository;
+        private readonly IDistributedCache _cache = cache;
 
         private static UserRoleModel RoleIdToUserRole(RoleId id)
         {
@@ -73,9 +65,9 @@ namespace UserService.Controllers
         {
             var claimsIdentity = HttpContext.User.Identity as ClaimsIdentity;
 
-            var emailClaim = claimsIdentity.FindFirst(ClaimTypes.Name);
+            var emailClaim = claimsIdentity!.FindFirst(ClaimTypes.Name);
 
-            if (emailClaim.Value == email)
+            if (emailClaim!.Value == email)
             {
                 return BadRequest("Администратор не может удалить сам себя");
             }
@@ -98,9 +90,9 @@ namespace UserService.Controllers
         {
             var claimsIdentity = HttpContext.User.Identity as ClaimsIdentity;
 
-            var emailClaim = claimsIdentity.FindFirst(ClaimTypes.Name);
+            var emailClaim = claimsIdentity!.FindFirst(ClaimTypes.Name);
 
-            var userId = _userRepository.GetUserId(emailClaim.Value);
+            var userId = _userRepository.GetUserId(emailClaim!.Value);
 
             return Ok(userId);
         }
@@ -217,16 +209,20 @@ namespace UserService.Controllers
 
         public static bool CheckPasswordFormat(string password)
         {
+#pragma warning disable SYSLIB1045 // Преобразовать в "GeneratedRegexAttribute".
             return Regex.IsMatch(password, @"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{5,}$");
+#pragma warning restore SYSLIB1045 // Преобразовать в "GeneratedRegexAttribute".
         }
 
 
         public static bool CheckEmailFormat(string email)
         {
+#pragma warning disable SYSLIB1045 // Преобразовать в "GeneratedRegexAttribute".
             return Regex.IsMatch(email, @"^[a-zA-Z\d]+@\S+\.\S+$");
+#pragma warning restore SYSLIB1045 // Преобразовать в "GeneratedRegexAttribute".
         }
 
-        public T GetData<T>(string key)
+        public T? GetData<T>(string key)
         {
             var value = _cache.GetString(key);
             if(!string.IsNullOrEmpty(value))
@@ -247,7 +243,7 @@ namespace UserService.Controllers
             var data = GetData<T>(key);
             if(data == null)
             {
-                value = default;
+                value = default!;
                 return false;
             }
             else

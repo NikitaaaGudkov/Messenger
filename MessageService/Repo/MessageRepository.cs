@@ -5,17 +5,10 @@ using MessageService.DTO;
 
 namespace MessageService.Repo
 {
-    public class MessageRepository : IMessageRepository
+    public class MessageRepository(MessageContext context, IMapper mapper) : IMessageRepository
     {
-        private readonly MessageContext _context;
-        private readonly IMapper _mapper;
-
-        public MessageRepository(MessageContext context, IMapper mapper)
-        {
-            _context = context;
-            _mapper = mapper;
-        }
-
+        private readonly MessageContext _context = context;
+        private readonly IMapper _mapper = mapper;
 
         public IEnumerable<MessageDto> ReceiveMessages(Guid consumerId)
         {

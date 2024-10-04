@@ -4,7 +4,7 @@ namespace MessageService.Db
 {
     public class MessageContext : DbContext
     {
-        private string _connectionString;
+        private readonly string _connectionString = null!;
 
         public MessageContext()
         {

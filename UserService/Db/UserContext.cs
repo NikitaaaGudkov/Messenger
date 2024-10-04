@@ -7,7 +7,7 @@ namespace UserService.Db
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
 
-        private string _connectionString = null!;
+        private readonly string _connectionString = null!;
         public UserContext()
         {
             
